@@ -21,6 +21,8 @@ nyc_df <- read_csv('NYC_Transit_Subway_Entrance_And_Exit_Data.csv',
   select(line,station_name,station_latitude,station_longitude,
          starts_with('route'),entry, vending, entrance_type, ada) %>% 
   mutate(entry=recode(entry, 'YES'=TRUE,'NO'=FALSE))
+
+nyc_df
 ```
 This is the first step of data management——reading and cleaning the data. This 
 nyc transit data include the information of the nyc subway station names, the 
@@ -38,31 +40,31 @@ can do the data-tidy job steo by step while answering the following questions.
 **How many distinct stations are there?**
 To get the information of the stations, we need to get the distinct station data.
 ```{r distinct station}
-nyc_df_distinct_station <- nyc_df%>% 
-  distinct(line,station_name,.keep_all = TRUE) 
+(nyc_df_distinct_station <- nyc_df%>% 
+  distinct(line,station_name,.keep_all = TRUE))
 nrow(nyc_df_distinct_station)
 ```
 Identified by line and station name, we know that **465** stations are distinct.
 
 **How many stations are ADA compliant?**
 ```{r ADA compliant}
-nyc_df_distinct_station %>% filter(ada==TRUE) %>% nrow()
+(nyc_df_distinct_station %>% filter(ada==TRUE) %>% nrow())
 ```
 Of all the distinct stations, **84** stations are ADA-compliant.
 
 **What proportion of station entrances / exits without vending allow entrance?**
 ```{r allow entrance proportion}
-entry_count <- nyc_df %>% 
+(entry_count <- nyc_df %>% 
   select(line,station_name,entry,vending) %>% 
   filter(vending=='NO',entry==TRUE) %>% 
-  nrow()
+  nrow())
 
-novending_count <- nyc_df %>% 
+(novending_count <- nyc_df %>% 
  select(line,station_name,entry,vending) %>% 
   filter(vending=='NO') %>% 
-  nrow()
+  nrow())
 
-proportion <- entry_count/novending_count
+(proportion <- entry_count/novending_count)
 ```
 **37.7%** of station entrances / exits without vending allow entrance. There are 
 183 entrances / exits without vending, and 69 of these allow entry.
@@ -70,21 +72,21 @@ proportion <- entry_count/novending_count
 Here, before answering the next question, we can fix the route variable problem
 talked about before by using the pivot_longer().
 ```{r reformat data}
-nyc_df_reformat <-  nyc_df %>% 
+(nyc_df_reformat <-  nyc_df %>% 
   pivot_longer(
     route1:route11,
     names_to = "route_name", 
-    values_to = "route_number")
+    values_to = "route_number"))
 ```
 In this case, the route number and route name are distinct variables. We can 
 continue working on the following questions.
 
 **How many distinct stations serve the A train?**
 ```{r A train}
-A_count <- nyc_df_reformat %>% 
+(A_count <- nyc_df_reformat %>% 
   filter(route_number=='A') %>% 
   distinct(line,station_name,.keep_all = TRUE) %>% 
-  nrow()
+  nrow())
 ```
 **60** is the number of the stations that serve the A train.
 
@@ -114,6 +116,8 @@ mrtrash_df <- read_excel('Trash-Wheel-Collection-Totals-7-2020-2.xlsx',
   filter(!(is.na(dump_num) | dump_num == 'Grand Total')) %>% 
   mutate(sports_balls= as.integer(round(sports_balls, 0)))
 
+mrtrash_df
+
 colnames(mrtrash_df)
 ```
 This produces a tibble of **453** observations and **14** variables. The key
@@ -128,6 +132,8 @@ proftrash_df <- read_excel('Trash-Wheel-Collection-Totals-7-2020-2.xlsx',
   rename(dump_num = dumpster) %>% 
   filter(!(is.na(dump_num) | dump_num == 'Grand Total')) %>% 
   mutate(sports_balls= as.integer(round(sports_balls, 0)))
+
+proftrash_df
 ```
 This produces a tibble of **71 observations** and **14 variables**.The key
 variables include *dump_num*, *year*, *weight_tons*, *sports_balls*,etc.
@@ -139,16 +145,20 @@ track of which Trash Wheel is which.
 proftrash_df <- proftrash_df %>% 
 mutate(label=rep('prof_trash',nrow(proftrash_df)))
 
+proftrash_df
+
 mrtrash_df <- mrtrash_df %>% 
 mutate(label=rep('mr_trash',nrow(mrtrash_df))) %>% 
    mutate(dump_num = as.double(dump_num))
+
+mrtrash_df
 ```
 The next step is dataset combination. I would use the function of full_join() to
 keep all the data of these 2 datasets, and join them by their shared variables.
 ```{r table join}
-alltrash_df <- full_join(mrtrash_df,proftrash_df, 
+(alltrash_df <- full_join(mrtrash_df,proftrash_df, 
                          by = intersect(colnames(mrtrash_df),
-                                        colnames(proftrash_df)))
+                                        colnames(proftrash_df))))
 ```
 In this way, I get a tibble of **524 observations** and **15 variables**. Simply
 speaking, it is like put the proftrash_df at the bottom of mrtrash_df since the
@@ -161,7 +171,7 @@ variables:
 ```{r sum number}
 sum(proftrash_df$weight_tons)
 
-mrtrash2020_df <- mrtrash_df %>% filter(year == 2020)
+(mrtrash2020_df <- mrtrash_df %>% filter(year == 2020))
 sum(mrtrash2020_df$sports_balls)
 ```
 The total weight of trash collected by Professor Trash Wheel is **135.5 tons**.
@@ -176,13 +186,13 @@ break up the variable mon into integer variables year, month, and day; replace
 month number with month name; create a president variable taking values gop and 
 dem, and remove prez_dem and prez_gop; and remove the day variable.
 ```{r pols_df}
-pols_df <- read_csv('fivethirtyeight_datasets/pols-month.csv') %>% 
+(pols_df <- read_csv('fivethirtyeight_datasets/pols-month.csv') %>% 
   separate(mon, into = c('year','month','day'),sep = '-') %>% 
   mutate(year = as.integer(year), month = as.integer(month),
          day=as.integer(day)) %>% 
   mutate(month = month.abb[month]) %>% 
   mutate(president = ifelse(prez_gop == 1, 'gop', 'dem')) %>% 
-  select(- c(day, prez_gop, prez_dem))
+  select(- c(day, prez_gop, prez_dem)))
 ```
 This produces a tibble of **822 observations** and **9 variables**. The year 
 ranges from 1950 to 2015. It includes year-month, gov_gop(the number of 
@@ -199,13 +209,13 @@ organize so that year and month are the leading columns.
 Note that again for consistency again datasets, we will replace month number 
 with month name.
 ``` {r snp_df}
-snp_df <- read_csv('fivethirtyeight_datasets/snp.csv') %>% 
+(snp_df <- read_csv('fivethirtyeight_datasets/snp.csv') %>% 
   separate(date, into = c('month','day','year'),sep = '/') %>%
   mutate(year = as.numeric(year)) %>%  
   mutate(year = ifelse(year <= 15, 2000+year, 1900+year)) %>% 
   mutate(month = as.numeric(month), day = as.numeric(day)) %>% 
   mutate(month = month.abb[month]) %>% 
-  arrange(year, month)
+  arrange(year, month))
 ```
 This produces a tibble of **787 observations** and **4 variables**. It includes
 *year*,*month*,*day*,and *close* (closing values of the S&P stock index on the 
@@ -216,9 +226,9 @@ previous datasets. This process will involve switching from “wide” to “lon
 format; ensuring that key variables have the same name; and ensuring that key 
 variables take the same values.
 ```{r unem_df}
-unem_df <- read_csv('fivethirtyeight_datasets/unemployment.csv') %>% 
+(unem_df <- read_csv('fivethirtyeight_datasets/unemployment.csv') %>% 
  pivot_longer(Jan:Dec, names_to = 'month', values_to = 'unemployed_rate') %>% 
-  janitor::clean_names()
+  janitor::clean_names())
 ```
 This produces a tibble of **816 observations** and **3 variables**. It includes
 *year*, *month*,and the corresponding *unemployment percentage* on that date.
@@ -226,9 +236,9 @@ This produces a tibble of **816 observations** and **3 variables**. It includes
 Last, we will join the datasets by merging snp into pols, and merging 
 unemployment into the result by using the function left_join().
 ```{r data merge}
-result_df <- left_join(pols_df, snp_df, by = c('year', 'month'))
+(result_df <- left_join(pols_df, snp_df, by = c('year', 'month')))
 
-final_result_df <- left_join(result_df, unem_df, by = c('year', 'month'))
+(final_result_df <- left_join(result_df, unem_df, by = c('year', 'month')))
 ```
 The *result_df* is a tibble of **822 observations** and **11 variables**, and 
 the *final_result_df* is a tibble of **822 observations** and **11 variables**.
