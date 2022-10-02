@@ -4,7 +4,7 @@ author: "Echo"
 date: "2022-09-28"
 output: github_document
 ---
-##Problem 1
+## Problem 1
 ```{r setup}
 library(tidyverse)
 ```
@@ -97,7 +97,7 @@ A_ADAcompliant_count <-nyc_df_reformat %>%
 ```
 **17** is the number of the ADA-compliant stations that serve the A train.
 
-##Problem 2
+## Problem 2
 This problem is about reading and tidying trash data. First I will read the 
 corresponding sheet of the excel file, and then omit the rows and columns that 
 do not contain the trash data. Furthermore, I will rename the first column and
@@ -167,7 +167,7 @@ sum(mrtrash2020_df$sports_balls)
 The total weight of trash collected by Professor Trash Wheel is **135.5 tons**.
 The total number of sports balls collected by Mr. Trash Wheel in 2020 is **856**.
 
-##Problem 3
+## Problem 3
 This problem uses the FiveThirtyEight data. We’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data 
 frame using year and month as keys across datasets.
 
