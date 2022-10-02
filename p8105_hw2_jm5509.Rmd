@@ -5,8 +5,9 @@ date: "2022-09-28"
 output: github_document
 ---
 ## Problem 1
-```{r setup}
+```{r setup, include=FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 ```{r read and clean data}
@@ -107,7 +108,6 @@ filter the rows that contain NA and the total number. In the end, I will round
 the number of sports balls to the nearest integer and converts the result to an 
 integer variable.
 ```{r read and clean mrtrash data}
-library(readxl)
 mrtrash_df <- read_excel('Trash-Wheel-Collection-Totals-7-2020-2.xlsx',
                             sheet = 'Mr. Trash Wheel', range = cell_cols('A:N'),
                             skip = 1) %>% 
