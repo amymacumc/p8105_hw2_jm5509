@@ -125,19 +125,18 @@ This produces a tibble of **`r nrow(mrtrash_df)` observations** and **`r ncol(mr
 
 The reading and cleaning steps of Professor Trash Wheel sheet are the same.
 ```{r read and clean proftrash data}
-proftrash_df <- read_excel('Trash-Wheel-Collection-Totals-7-2020-2.xlsx',
+proftrash_df <- read_excel('Trash Wheel Collection Data.xlsx',
                             sheet = 'Professor Trash Wheel', 
                            range = cell_cols('A:N'), skip = 1) %>% 
   janitor::clean_names() %>% 
   rename(dump_num = dumpster) %>% 
-  filter(!(is.na(dump_num) | dump_num == 'Grand Total')) %>% 
-  mutate(sports_balls= as.integer(round(sports_balls, 0)))
+  filter(!(is.na(dump_num) | dump_num == 'Grand Total')) 
 
 proftrash_df
 ```
 This produces a tibble of **`r nrow(proftrash_df)`  observations** and 
 **`r ncol(proftrash_df)` variables**.The key variables include *dump_num*, 
-*year*, *weight_tons*, *sports_balls*,etc.
+*year*, *weight_tons*, etc.
 
 After getting these 2 datasets, we can join them into 1 tidy dataset. But first,
 we can add an additional variable to both datasets before combining to keep 
@@ -162,10 +161,8 @@ keep all the data of these 2 datasets, and join them by their shared variables.
                                         colnames(proftrash_df))))
 ```
 In this way, I get a tibble of **`r nrow(alltrash_df)`  observations** and 
-**`r ncol(alltrash_df)`  variables**. Simply speaking, it is like put the 
-proftrash_df at the bottom of mrtrash_df since the 2 dataframes have exactly 
-the same variable names. However, they could also be easily distinguished by the
-different corresponding value of variable "label".
+**`r ncol(alltrash_df)`  variables**. The key variables include *dump_num*, 
+*year*, *weight_tons*, *sports_balls*,etc.
 
 The illustrate the information of the datasets,better, we can extract some of 
 the info we want. For example, the 2 following questions could help:
@@ -178,8 +175,8 @@ sum(proftrash_df$weight_tons)
 (mrtrash2020_df <- mrtrash_df %>% filter(year == 2020))
 sum(mrtrash2020_df$sports_balls)
 ```
-The total weight of trash collected by Professor Trash Wheel is `r sum(proftrash_df$weight_tons)` tons.
-The total number of sports balls collected by Mr. Trash Wheel in 2020 is `r sum(mrtrash2020_df$sports_balls)`.
+The total weight of trash collected by Professor Trash Wheel is **`r sum(proftrash_df$weight_tons)` tons**.
+The total number of sports balls collected by Mr. Trash Wheel in 2020 is **`r sum(mrtrash2020_df$sports_balls)`**.
 
 ## Problem 3
 This problem uses the FiveThirtyEight data. We’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data 
