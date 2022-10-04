@@ -207,16 +207,19 @@ date) .
 Second, clean the data in snp.csv using a similar process to the above. For 
 consistency across datasets, we arrange according to year and month, and 
 organize so that year and month are the leading columns.
+This dataset is kinda trick to deal with, because
 Note that again for consistency again datasets, we will replace month number 
 with month name.
 ``` {r snp_df}
-(snp_df <- read_csv('fivethirtyeight_datasets/snp.csv') %>% 
+(snp_df <- read_csv('fivethirtyeight_datasets/snp.csv')  %>% 
   separate(date, into = c('month','day','year'),sep = '/') %>%
   mutate(year = as.numeric(year)) %>%  
-  mutate(year = ifelse(year <= 15, 2000+year, 1900+year)) %>% 
-  mutate(month = as.numeric(month), day = as.numeric(day)) %>% 
-  mutate(month = month.abb[month]) %>% 
-  arrange(year, month))
+  mutate(year = ifelse(year<= 15, year + 2000, year + 1900)) %>% 
+  mutate(month = as.numeric(month), day = as.numeric(day)) %>%
+  arrange(year, month) %>% 
+  mutate(month = month.abb[month]) 
+)
+  
 ```
 This produces a tibble of **787 observations** and **4 variables**. It includes
 *year*,*month*,*day*,and *close* (closing values of the S&P stock index on the 
